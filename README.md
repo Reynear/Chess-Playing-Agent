@@ -30,7 +30,18 @@ every move is logged to `match.pgn`):
 python match.py Reynear Reference --depth 3 --openings 5
 ```
 
-Human-vs-agent and live agent-vs-agent in the GUI: _to be added_.
+Graphical interface:
+
+```bash
+python gui.py
+```
+
+- **Human vs agent:** set one colour to `Human` and the other to an agent by
+  clicking the player buttons. Click a piece, then click its destination.
+- **Agent vs agent:** set both colours to agents and the game plays live.
+  `Pause` stops it and `Step one move` advances a single move.
+- **Difficulty:** the `Depth` button under each colour sets how many moves
+  ahead that agent searches (1-4).
 
 ## Project layout
 
@@ -42,6 +53,7 @@ Human-vs-agent and live agent-vs-agent in the GUI: _to be added_.
 | `agents/reynear.py` | Reynear's agent: defensive evaluation function |
 | `openings.py` | Hard-coded opening book used to start match games |
 | `match.py` | Agent-vs-agent match harness |
+| `gui.py` | Pygame window for human-vs-agent and agent-vs-agent play |
 
 ## How the search works
 
