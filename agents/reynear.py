@@ -21,6 +21,53 @@ PIECE_VALUES = {
 # Bonus for a passed pawn by how many ranks it has advanced (0 to 5).
 PASSED_BONUS = (0, 5, 10, 20, 40, 70)
 
+# Piece-square tables: how good each square is for each piece, in hundredths
+# of a pawn. Written as the board looks from White's side (rank 8 at the top).
+PAWN_TABLE = (
+     0,   0,   0,   0,   0,   0,   0,   0,
+    50,  50,  50,  50,  50,  50,  50,  50,
+    10,  10,  20,  30,  30,  20,  10,  10,
+     5,   5,  10,  25,  25,  10,   5,   5,
+     0,   0,   0,  20,  20,   0,   0,   0,
+     5,  -5, -10,   0,   0, -10,  -5,   5,
+     5,  10,  10, -20, -20,  10,  10,   5,
+     0,   0,   0,   0,   0,   0,   0,   0,
+)
+KNIGHT_TABLE = (
+   -50, -40, -30, -30, -30, -30, -40, -50,
+   -40, -20,   0,   0,   0,   0, -20, -40,
+   -30,   0,  10,  15,  15,  10,   0, -30,
+   -30,   5,  15,  20,  20,  15,   5, -30,
+   -30,   0,  15,  20,  20,  15,   0, -30,
+   -30,   5,  10,  15,  15,  10,   5, -30,
+   -40, -20,   0,   5,   5,   0, -20, -40,
+   -50, -40, -30, -30, -30, -30, -40, -50,
+)
+BISHOP_TABLE = (
+   -20, -10, -10, -10, -10, -10, -10, -20,
+   -10,   0,   0,   0,   0,   0,   0, -10,
+   -10,   0,   5,  10,  10,   5,   0, -10,
+   -10,   5,   5,  10,  10,   5,   5, -10,
+   -10,   0,  10,  10,  10,  10,   0, -10,
+   -10,  10,  10,  10,  10,  10,  10, -10,
+   -10,   5,   0,   0,   0,   0,   5, -10,
+   -20, -10, -10, -10, -10, -10, -10, -20,
+)
+ROOK_TABLE = (
+     0,   0,   0,   0,   0,   0,   0,   0,
+     5,  10,  10,  10,  10,  10,  10,   5,
+    -5,   0,   0,   0,   0,   0,   0,  -5,
+    -5,   0,   0,   0,   0,   0,   0,  -5,
+    -5,   0,   0,   0,   0,   0,   0,  -5,
+    -5,   0,   0,   0,   0,   0,   0,  -5,
+    -5,   0,   0,   0,   0,   0,   0,  -5,
+     0,   0,   0,   5,   5,   0,   0,   0,
+)
+TABLES = {
+    chess.PAWN: PAWN_TABLE, chess.KNIGHT: KNIGHT_TABLE,
+    chess.BISHOP: BISHOP_TABLE, chess.ROOK: ROOK_TABLE,
+}
+
 
 def material(board, color):
     """Total value of one side's pieces."""
@@ -70,11 +117,13 @@ def pawn_structure(board, color):
 
 
 def placement(board, color):
-    """Knights and bishops near the centre, plus a bishop-pair bonus."""
+    """Each piece on a good square (piece-square tables), plus the bishop pair."""
     score = 0
-    for sq in board.pieces(chess.KNIGHT, color) | board.pieces(chess.BISHOP, color):
-        f, r = chess.square_file(sq), chess.square_rank(sq)
-        score += 3 * (min(f, 7 - f) + min(r, 7 - r))    # closer to the centre is better
+    for piece, table in TABLES.items():
+        for sq in board.pieces(piece, color):
+            # The tables are drawn from White's side with rank 8 first, so
+            # White's squares are flipped top-to-bottom; Black's already match.
+            score += table[sq ^ 56] if color == chess.WHITE else table[sq]
     if len(board.pieces(chess.BISHOP, color)) >= 2:
         score += 30
     return score
