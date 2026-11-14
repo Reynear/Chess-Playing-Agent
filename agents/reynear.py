@@ -6,6 +6,10 @@ Strategy: keep the king sheltered above all else, keep the pawns tidy,
 and put pieces on sound squares. It measures the *structure* around its
 king (castled, pawns in front, no open files) and never counts attackers,
 mobility or checks.
+
+Once most of the enemy's pieces are gone the danger has passed, so the
+king stops hiding and walks to the centre, and passed pawns are valued so
+that a won endgame actually gets won.
 """
 
 import chess
@@ -14,6 +18,8 @@ PIECE_VALUES = {
     chess.PAWN: 100, chess.KNIGHT: 300, chess.BISHOP: 300,
     chess.ROOK: 500, chess.QUEEN: 900,
 }
+# Bonus for a passed pawn by how many ranks it has advanced (0 to 5).
+PASSED_BONUS = (0, 5, 10, 20, 40, 70)
 
 
 def material(board, color):
@@ -74,15 +80,42 @@ def placement(board, color):
     return score
 
 
+def passed_pawns(board, color):
+    """Bonus for pawns that no enemy pawn can block or capture on the way up."""
+    enemy_pawns = board.pieces(chess.PAWN, not color)
+    score = 0
+    for sq in board.pieces(chess.PAWN, color):
+        f, r = chess.square_file(sq), chess.square_rank(sq)
+        stoppers = [e for e in enemy_pawns
+                    if abs(chess.square_file(e) - f) <= 1
+                    and (chess.square_rank(e) > r if color == chess.WHITE
+                         else chess.square_rank(e) < r)]
+        if not stoppers:
+            steps = r - 1 if color == chess.WHITE else 6 - r
+            score += PASSED_BONUS[steps]
+    return score
+
+
+def king_activity(board, color):
+    """Up to 48: in the endgame the king should come to the centre and help."""
+    king = board.king(color)
+    f, r = chess.square_file(king), chess.square_rank(king)
+    return 8 * (min(f, 7 - f) + min(r, 7 - r))
+
+
 def side_score(board, color):
     """Everything this agent values, for one side."""
     enemy = not color
     enemy_pieces = material(board, enemy) - 100 * len(board.pieces(chess.PAWN, enemy))
-    # Shelter matters less as attackers come off: full weight at 1500+ of
-    # enemy pieces, shrinking to zero. Whole-number arithmetic throughout.
-    shelter = king_shelter(board, color) * min(1500, enemy_pieces) // 1500
-    return (material(board, color) + shelter
-            + pawn_structure(board, color) + placement(board, color))
+    # danger runs from 1500 (middlegame: plenty of enemy attackers) down to 0
+    # (endgame). While it is high the king hides behind its pawns; as it
+    # drops the shelter stops mattering and the king is rewarded for coming
+    # out instead. Whole-number arithmetic throughout.
+    danger = min(1500, enemy_pieces)
+    king = (king_shelter(board, color) * danger
+            + king_activity(board, color) * (1500 - danger)) // 1500
+    return (material(board, color) + king + pawn_structure(board, color)
+            + passed_pawns(board, color) + placement(board, color))
 
 
 def reynear_eval(board):
