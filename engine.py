@@ -70,7 +70,7 @@ def minimax(board, depth, evaluate):
     score = finished_score(board, depth)
     if score is not None:
         return score
-    if depth == 0:
+    if depth <= 0:
         return evaluate(board)
 
     scores = []
@@ -95,7 +95,7 @@ def alphabeta(board, depth, alpha, beta, evaluate):
     score = finished_score(board, depth)
     if score is not None:
         return score
-    if depth == 0:
+    if depth <= 0:
         return evaluate(board)
 
     if board.turn == chess.WHITE:
@@ -128,6 +128,9 @@ def choose_move(board, depth, evaluate):
     """
     global nodes_searched
     nodes_searched = 0
+
+    if finished_score(board, depth) is not None:      # mate or a draw by rule
+        return None
 
     white = board.turn == chess.WHITE
     best_move, best = None, (-math.inf if white else math.inf)
