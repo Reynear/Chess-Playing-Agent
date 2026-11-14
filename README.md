@@ -36,12 +36,15 @@ Graphical interface:
 python gui.py
 ```
 
-- **Human vs agent:** set one colour to `Human` and the other to an agent by
-  clicking the player buttons. Click a piece, then click its destination.
-- **Agent vs agent:** set both colours to agents and the game plays live.
-  `Pause` stops it and `Step one move` advances a single move.
-- **Difficulty:** the `Depth` button under each colour sets how many moves
-  ahead that agent searches (1-4).
+The side panel has two modes:
+
+- **Human vs Agent:** choose your opponent, the colour you play and the
+  difficulty. Click one of your pieces, then click a marked square.
+- **Agent vs Agent:** choose an agent and a difficulty for each colour and
+  press `Start`. `Pause` stops the game and `Step` plays a single move.
+
+Difficulty is the search depth (1-4): how many moves ahead the agent looks.
+Every agent in the registry appears as a choice automatically.
 
 ## Project layout
 
