@@ -38,25 +38,28 @@ def save_pgn(board, path, opening, white, black, result):
 
 
 def run_match(name_a, name_b, depth, openings, seed=1, pgn_path="match.pgn"):
-    """Play every opening twice with colours swapped and return the scores."""
+    """Play every opening twice with colours swapped.
+
+    Returns the two scores in the order (agent a, agent b).
+    """
     random.seed(seed)                         # same seed = same match every run
     open(pgn_path, "w").close()               # start a fresh log
     names = (name_a, name_b)
     agents = (make_agent(name_a, depth), make_agent(name_b, depth))
-    score = {name_a: 0.0, name_b: 0.0}
+    score = [0.0, 0.0]                        # kept by position, so an agent can play itself
 
     for opening in openings:
         for white, black in ((0, 1), (1, 0)):
             board = play_game(agents[white], agents[black], opening)
             result = board.result(claim_draw=True)
             if result == "1-0":
-                score[names[white]] += 1
+                score[white] += 1
             elif result == "0-1":
-                score[names[black]] += 1
+                score[black] += 1
             else:                             # draw, or move limit reached
                 result = "1/2-1/2"
-                score[names[white]] += 0.5
-                score[names[black]] += 0.5
+                score[white] += 0.5
+                score[black] += 0.5
             save_pgn(board, pgn_path, opening, names[white], names[black], result)
             print(f"{opening:20} {names[white]:>10} (W) vs {names[black]:<10} (B)  "
                   f"{result:8} {board.fullmove_number} moves")
@@ -75,8 +78,7 @@ def main():
 
     openings = list(OPENINGS)[:args.openings]
     score = run_match(args.agent_a, args.agent_b, args.depth, openings, args.seed)
-    print(f"\nFinal score: {args.agent_a} {score[args.agent_a]} - "
-          f"{score[args.agent_b]} {args.agent_b}")
+    print(f"\nFinal score: {args.agent_a} {score[0]} - {score[1]} {args.agent_b}")
 
 
 if __name__ == "__main__":
