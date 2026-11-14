@@ -6,6 +6,7 @@ this folder, then add one line to AGENTS below.
 
 from engine import choose_move
 
+from agents.darren import darren_eval
 from agents.reference import material_eval
 from agents.reynear import reynear_eval
 
@@ -13,7 +14,7 @@ from agents.reynear import reynear_eval
 AGENTS = {
     "Reference": material_eval,
     "Reynear": reynear_eval,
-    # "Partner": partner_eval,   # partner's agent goes here
+    "Darren": darren_eval,
 }
 
 

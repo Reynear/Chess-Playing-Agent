@@ -9,7 +9,7 @@ its own playing style.
 | Part | Owner |
 |---|---|
 | Reynear agent (`agents/reynear.py`) – defensive: king safety first, positional | Reynear Douglas |
-| Partner's agent – attacking, king pressure | _partner – to be added_ |
+| Darren agent (`agents/darren.py`) – aggressive: piece activity, king attack, threats | Darren |
 | Shared search, opening book, match harness | Reynear Douglas |
 | GUI | _to be added_ |
 
@@ -27,7 +27,7 @@ Agent-vs-agent match (each opening is played twice with colours swapped;
 every move is logged to `match.pgn`):
 
 ```bash
-python match.py Reynear Reference --depth 3 --openings 5
+python match.py Darren Reynear --depth 3 --openings 5
 ```
 
 Graphical interface:
@@ -54,6 +54,7 @@ Every agent in the registry appears as a choice automatically.
 | `agents/__init__.py` | Registry of agents; add a new agent here |
 | `agents/reference.py` | Baseline agent that only counts material |
 | `agents/reynear.py` | Reynear's agent: defensive evaluation function |
+| `agents/darren.py` | Darren's agent: aggressive evaluation function |
 | `openings.py` | Hard-coded opening book used to start match games |
 | `match.py` | Agent-vs-agent match harness |
 | `gui.py` | Pygame window for human-vs-agent and agent-vs-agent play |
