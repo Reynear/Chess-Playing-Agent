@@ -32,7 +32,8 @@ def finished_score(board, depth):
     if board.is_checkmate():
         # The side to move has been mated.
         return -(MATE + depth) if board.turn == chess.WHITE else MATE + depth
-    if board.is_stalemate() or board.is_insufficient_material():
+    if (board.is_stalemate() or board.is_insufficient_material()
+            or board.is_repetition(3) or board.is_fifty_moves()):
         return 0
     return None
 
