@@ -7,6 +7,7 @@ evaluation function they pass in, which must have the form
 """
 
 import math
+import random
 
 import chess
 
@@ -80,3 +81,29 @@ def alphabeta(board, depth, alpha, beta, evaluate):
             if alpha >= beta:        # White would never allow this line
                 break
         return best
+
+
+def choose_move(board, depth, evaluate):
+    """Return the best move for whoever's turn it is (None if game over).
+
+    Moves are shuffled first, so when several moves score exactly the
+    same, which one gets played is random.
+    """
+    white = board.turn == chess.WHITE
+    best_move, best = None, (-math.inf if white else math.inf)
+    alpha, beta = -math.inf, math.inf
+
+    moves = list(board.legal_moves)
+    random.shuffle(moves)
+
+    for move in moves:
+        board.push(move)
+        score = alphabeta(board, depth - 1, alpha, beta, evaluate)
+        board.pop()
+        if (white and score > best) or (not white and score < best):
+            best, best_move = score, move
+        if white:
+            alpha = max(alpha, best)
+        else:
+            beta = min(beta, best)
+    return best_move
