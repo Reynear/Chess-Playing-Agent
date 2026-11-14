@@ -90,6 +90,35 @@ and matches start from a small book of standard openings.
 
 ## Strategy comparison
 
+### Reynear's agent: defensive and positional
+
+Its first priority is a safe king. It wants to castle, keep the pawns in
+front of the king where they are and keep the files next to the king closed.
+After that it looks after its pawn structure and puts each piece on a sound
+square. It never counts attackers, checks or how many moves it has, so it
+does not go looking for an attack; it waits for the opponent to overreach.
+
+| Term | What it rewards | Size |
+|---|---|---|
+| Material | Standard piece values | Pawn 100 to queen 900 |
+| King shelter | Castled king, pawn shield, no open files beside the king | Up to about 130 |
+| Pawn structure | Avoiding doubled and isolated pawns | -10 to -15 each |
+| Piece placement | Piece-square tables for pawns, knights, bishops and rooks, plus the bishop pair | -50 to +50 per piece |
+| Passed pawns | Pawns no enemy pawn can stop, more as they advance | 5 to 70 |
+| King activity | King near the centre | Up to 48 |
+
+King shelter is the largest positional term but is always worth less than a
+piece, so the agent will not give up material for it. It also fades: it
+counts in full while the opponent still has a queen and rook's worth of
+pieces, and shrinks to nothing as they are traded off. King activity grows
+by the same amount, so in the endgame the king leaves its shelter and helps.
+
+### Partner's agent
+
+_To be added._
+
+### How the two differ
+
 _To be written once both agents are finished._
 
 ## Match report
