@@ -324,14 +324,23 @@ def handle_click(game, pos):
 
 
 def load_piece_images():
-    """Render python-chess's built-in piece drawings to pygame images."""
+    """Render python-chess's built-in piece drawings to pygame images.
+
+    The drawings are 45 units wide. Some systems scale an SVG to its stated
+    width and others ignore that and use the drawing's own size, which left
+    the pieces the wrong size for the squares. To get the same result
+    everywhere, the drawing itself is enlarged four times (so both readings
+    give a 180-pixel image) and the result is then resized to exactly one
+    square.
+    """
+    scale, size = 4, 45 * 4
     images = {}
-    for color in chess.COLORS:
-        for piece_type in chess.PIECE_TYPES:
-            piece = chess.Piece(piece_type, color)
-            svg = chess.svg.piece(piece, size=SQ)
-            images[piece.symbol()] = pygame.image.load(
-                io.BytesIO(svg.encode()), "piece.svg").convert_alpha()
+    for symbol, drawing in chess.svg.PIECES.items():
+        svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" '
+               f'width="{size}" height="{size}">'
+               f'<g transform="scale({scale})">{drawing}</g></svg>')
+        image = pygame.image.load(io.BytesIO(svg.encode()), "piece.svg").convert_alpha()
+        images[symbol] = pygame.transform.smoothscale(image, (SQ, SQ))
     return images
 
 
