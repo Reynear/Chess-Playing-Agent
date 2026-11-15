@@ -114,14 +114,71 @@ counts in full while the opponent still has a queen and rook's worth of
 pieces, and shrinks to nothing as they are traded off. King activity grows
 by the same amount, so in the endgame the king leaves its shelter and helps.
 
-### Partner's agent
+### Darren's agent
 
-_To be added._
+_To be written by Darren._
 
 ### How the two differ
 
-_To be written once both agents are finished._
+| | Reynear's agent | Darren's agent |
+|---|---|---|
+| Style | Defensive, positional | Aggressive, attacking |
+| Which king it watches | Its own | The opponent's |
+| Main positional term | King shelter: castled, pawn shield, closed files | King attack: pieces aimed at and close to the enemy king |
+| Pawns | Kept tidy; doubled and isolated pawns penalised | Pushed forward as a pawn storm |
+| Pieces | Good fixed squares (piece-square tables) | Free movement, open lines, threats and checks |
+| Does not look at | Attackers, mobility, threats, checks | Its own king's shelter, pawn structure |
+
+The only term the two share is material. One agent measures the *structure*
+of its own position and scores the same whether or not anything is being
+attacked; the other measures *activity* against the opponent and changes
+with every threat on the board.
 
 ## Match report
 
-_To be written from the final match results._
+Ten games at search depth 3, started from five book openings, each opening
+played twice with colours swapped (`python match.py Reynear Darren --depth 3
+--openings 5`, seed 1). Every move is in `match.pgn`.
+
+**Final score: Darren 9 - 1 Reynear** (Darren 8 wins, 2 draws, 0 losses).
+
+| Opening | Reynear as White | Reynear as Black |
+|---|---|---|
+| Open Game | Draw (58 moves) | Loss (64) |
+| Sicilian Defence | Loss (32) | Loss (32) |
+| French Defence | Loss (39) | Draw (54) |
+| Caro-Kann Defence | Loss (54) | Loss (21) |
+| Queen's Pawn Game | Loss (21) | Loss (50) |
+
+All eight decisive games ended in checkmate and both draws were by
+threefold repetition.
+
+### What decided the games
+
+The attacking agent won clearly, but mostly not by breaking through a
+sheltered king. In six of the ten games Reynear's agent was already at
+least two pawns behind by move 7, and in three games it never castled at
+all. The games were decided by material lost in the opening, before the
+defensive plan had been set up.
+
+The reason is what each evaluation can see when the search runs out. At
+depth 3 the search stops and scores the board as it stands, even if a piece
+is about to be captured. Reynear's agent scores structure only (shelter,
+pawns, piece squares), so a position where one of its pieces is hanging
+looks as good as one where it is safe. Darren's agent has a threats term
+that counts enemy pieces which are attacked and undefended, or attacked by
+something cheaper. That gives it one extra move of tactical sight at the
+end of every line: it avoids leaving pieces loose and it notices when the
+opponent has.
+
+So the strategic difference showed up in an unexpected place. An evaluation
+built on activity and threats is also a tactical evaluation, which matters
+a great deal at shallow depth. An evaluation built on structure is sound
+positionally but tactically blind, and a safe king is no use once the
+pieces defending it have been lost.
+
+### Against the reference agent
+
+For comparison, Reynear's agent beat the material-only reference agent 7 - 3
+over ten games at the same depth, so the structural terms do help against
+an opponent with no positional or tactical knowledge of its own.
