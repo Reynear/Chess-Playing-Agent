@@ -2,25 +2,25 @@
 
 Built by Darren.
 
-Strategy: go after the enemy king. Material still counts, but on top of it
-this agent is paid for *activity*: pieces aimed at the squares around the
-enemy king, pieces close to that king, free movement, pawns marching up the
-board, open lines for the rooks, and threats against enemy pieces. It never
-looks at its own king's shelter or at pawn structure, so it will happily
-loosen its own position to keep an attack going.
+Strategy: My strategy is to be as aggressive as is reasonable ant=d to attack the enemy king. 
+This agent is rewarded by the activity of its pieces, particularly those aimed at the enemy king.I got
+the idea of offense is the best defence from watching Mr Robot
 """
 
 import chess
 
 PIECE_VALUES = {
     chess.PAWN: 100, chess.KNIGHT: 300, chess.BISHOP: 300,
-    chess.ROOK: 500, chess.QUEEN: 900, chess.KING: 0,
+
+    chess.ROOK: 500, chess.QUEEN: 900,
+      chess.KING: 0,
+
 }
 
-# The pieces that do the attacking (everything except pawns and the king).
-ATTACKERS = (chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN)
+# The pieces that do the attacking 
+ATTACKERS = (chess.KNIGHT , chess.BISHOP, chess.ROOK, chess.QUEEN)
 
-# How dangerous each piece is when it bears on the enemy king's zone.
+# giving a weight to a specific piece attacking the enemy king. Pawns are not very dangeros, but a queen is a real threat.
 ATTACK_WEIGHT = {chess.PAWN: 10, chess.KNIGHT: 25, chess.BISHOP: 25,
                  chess.ROOK: 40, chess.QUEEN: 80}
 
@@ -33,7 +33,8 @@ ATTACK_SCALE = (0, 30, 65, 90, 100, 110, 115, 120)
 MOBILITY = {chess.KNIGHT: 4, chess.BISHOP: 4, chess.ROOK: 2, chess.QUEEN: 1}
 CLOSENESS = {chess.KNIGHT: 4, chess.BISHOP: 2, chess.ROOK: 3, chess.QUEEN: 5}
 
-CHECK_BONUS = 35        # the enemy king is in check right now
+CHECK_BONUS = 35        # the enemy king is in check right now so we add a bonus to the score
+
 THREAT_BONUS = 15       # an enemy piece is under real threat
 CAPTURE_SHARE = 75      # % of a threatened piece's value counted when it is our move
 
@@ -41,6 +42,7 @@ CAPTURE_SHARE = 75      # % of a threatened piece's value counted when it is our
 def material(board, color):
     """Total value of one side's pieces."""
     return sum(value * len(board.pieces(piece, color))
+               
                for piece, value in PIECE_VALUES.items())
 
 
