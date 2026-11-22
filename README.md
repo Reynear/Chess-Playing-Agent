@@ -190,4 +190,4 @@ over ten games at the same depth, so the structural terms do help against
 an opponent with no positional or tactical knowledge of its own.
 
 # AI Usage 
-The Claude family of models was used significantly for Assistance in unfamiliar code segments Debugging and proofreading and verifying documentation and code but I'll strategies, implementations, etc., are directly attributed to the two group members (620171008, 620169548)
+The Claude family of models was used for assistance in unfamiliar code segments, debugging, proofreading, verifying documentation.
