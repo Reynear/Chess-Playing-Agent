@@ -1,20 +1,18 @@
 # Chess-Playing-Agent
 
-Two chess agents built on a shared minimax search with alpha-beta pruning
-(COMP3220 pair assignment). Each agent has its own evaluation function and
-its own playing style.
-
+We created Two chess agents built on a shared minimax search with alpha-beta pruning.The agents have a shared core but individual play styles 
+and evaluation functions.
 ## Who built what
 
 | Part | Owner |
 |---|---|
 | Reynear agent (`agents/reynear.py`) – defensive: king safety first, positional | Reynear Douglas |
-| Darren agent (`agents/darren.py`) – aggressive: piece activity, king attack, threats | Darren |
-| Shared search, opening book, match harness | Reynear Douglas |
-| GUI | _to be added_ |
+| Darren agent (`agents/darren.py`) – aggressive: piece activity, king attack, threats | Darren Tyme |
+| Shared search, opening book, match harness | Reynear Douglas and Darren Tyme|
+| GUI | Darren Tyme and Reynear Douglas with the assistance of claude to understand the pygame semantics(claude sonnet 5) |
 
 ## Setup
-
+To run the program:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -24,27 +22,32 @@ pip install -r requirements.txt
 ## Running
 
 Agent-vs-agent match (each opening is played twice with colours swapped;
-every move is logged to `match.pgn`):
+every move is logged to `match.pgn` it is in standard chess notation, so fun fact you can import the games into chess.com and replay see the matches play out there if you want  ):
 
 ```bash
 python match.py Darren Reynear --depth 3 --openings 5
+
 ```
 
 Graphical interface:
 
 ```bash
+
 python gui.py
 ```
 
 The side panel has two modes:
 
 - **Human vs Agent:** choose your opponent, the colour you play and the
-  difficulty. Click one of your pieces, then click a marked square.
-- **Agent vs Agent:** choose an agent and a difficulty for each colour and
-  press `Start`. `Pause` stops the game and `Step` plays a single move.
+  difficulty. In the GUI it follows standard chess procedures for movement.
 
-Difficulty is the search depth (1-4): how many moves ahead the agent looks.
-Every agent in the registry appears as a choice automatically.
+
+- **Agent vs Agent:** choose an agent and a difficulty for each colour and
+  press `Start`  . 
+
+
+
+The difficulty setting adjusts the search depth meaning how many  moves ahead the agent considers.
 
 ## Project layout
 
@@ -61,18 +64,18 @@ Every agent in the registry appears as a choice automatically.
 
 ## How the search works
 
-**Minimax.** The agent tries every legal move, then every reply, and so on
+**Minimax.** The agent tries every  move that would be legal to make, then every reply, and so on
 down to a fixed depth. At the bottom it scores the board with an evaluation
 function (positive = good for White). White picks the move leading to the
 highest score and assumes Black will always pick the reply leading to the
 lowest, and vice versa.
 
 **Alpha-beta pruning.** While searching, the agent keeps track of the best
-score each side can already guarantee (`alpha` for White, `beta` for Black).
+score each side can already guarantee .
 As soon as a branch is shown to be worse than an option already found, the
 rest of that branch is skipped. The chosen move is identical to plain
 minimax; only the amount of work changes. Trying captures first makes the
-skipping far more effective.
+skipping far more effective.This is because captures lead to a better evaluation because base grading is based on the piece advantage a player may have.
 
 Positions searched from one middlegame position:
 
@@ -88,6 +91,7 @@ quickest win.
 **Draws and variety.** Threefold repetition and the fifty-move rule score as
 draws. When several moves score exactly the same, one is picked at random,
 and matches start from a small book of standard openings.
+
 
 ## Strategy comparison
 
@@ -114,9 +118,29 @@ counts in full while the opponent still has a queen and rook's worth of
 pieces, and shrinks to nothing as they are traded off. King activity grows
 by the same amount, so in the endgame the king leaves its shelter and helps.
 
-### Darren's agent
+### Darren's agent: aggressive and attacking
 
-_To be written by Darren._
+Its first priority is the enemy king. It wants its pieces aimed at and
+close to the squares around that king, its pawns pushed forward, its rooks
+on open files and enemy pieces under threat. It never looks at its own
+king's shelter or pawn structure, so it will loosen its own position to
+keep an attack going.
+
+| Term | What it rewards | Size |
+|---|---|---|
+| Material | Standard piece values | Pawn 100 to queen 900 |
+| King attack | Pieces and pawns hitting the squares around the enemy king | Up to about 300 |
+| Activity | Squares each piece can move to, and closeness to the enemy king | 1 to 5 per square or step |
+| Pawn storm | Advanced pawns, double on the files in front of the enemy king | Up to 50 per pawn |
+| Open lines | Rooks and queens on files free of their own pawns | 10 to 25 each |
+| Threats and checks | Enemy pieces hanging or attacked by something cheaper; giving check | 15 to 35 each |
+
+King attack is the largest positional term and grows with numbers: one
+attacker counts for 30% of its weight, three or more for 90% to 120%, so the
+agent brings pieces over together instead of sending one in alone. Without a
+queen it counts half. Threats also count most of a hanging piece's value when
+it is this agent's move, since it can take it next move; this stops it from
+ending a line with its own pieces left loose.
 
 ### How the two differ
 
