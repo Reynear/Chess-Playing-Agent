@@ -1,7 +1,11 @@
 # Chess-Playing-Agent
 
+Darren Tyme (620169548)  
+Reynear Douglas (620171008)
+
 We created Two chess agents built on a shared minimax search with alpha-beta pruning.The agents have a shared core but individual play styles 
 and evaluation functions.
+
 ## Who built what
 
 | Part | Owner |
@@ -97,11 +101,7 @@ and matches start from a small book of standard openings.
 
 ### Reynear's agent: defensive and positional
 
-Its first priority is a safe king. It wants to castle, keep the pawns in
-front of the king where they are and keep the files next to the king closed.
-After that it looks after its pawn structure and puts each piece on a sound
-square. It never counts attackers, checks or how many moves it has, so it
-does not go looking for an attack; it waits for the opponent to overreach.
+This strategy priorities a safe king and proper positional play. It rewards castling, keeping pawns in front of the king and keep the files next to the King closed. After that it makes sure the pawn structure is sound (no doubled pawns, no isolated pawns). It intentionaly does not count attackers or checks of the enemy pieces so it does not look to attack and has to wait for the opponent to overextend
 
 | Term | What it rewards | Size |
 |---|---|---|
@@ -179,30 +179,15 @@ threefold repetition.
 
 ### What decided the games
 
-The attacking agent won clearly, but mostly not by breaking through a
-sheltered king. In six of the ten games Reynear's agent was already at
-least two pawns behind by move 7, and in three games it never castled at
-all. The games were decided by material lost in the opening, before the
-defensive plan had been set up.
+The attacking agent won, though rarely by breaking through a sheltered king. In six of the ten games, Reynear's agent was already at least two pawns down by move 7, and in three it never castled at all. Most games were settled by opening material losses before its defensive setup could take shape.
 
-The reason is what each evaluation can see when the search runs out. At
-depth 3 the search stops and scores the board as it stands, even if a piece
-is about to be captured. Reynear's agent scores structure only (shelter,
-pawns, piece squares), so a position where one of its pieces is hanging
-looks as good as one where it is safe. Darren's agent has a threats term
-that counts enemy pieces which are attacked and undefended, or attacked by
-something cheaper. That gives it one extra move of tactical sight at the
-end of every line: it avoids leaving pieces loose and it notices when the
-opponent has.
-
-So the strategic difference showed up in an unexpected place. An evaluation
-built on activity and threats is also a tactical evaluation, which matters
-a great deal at shallow depth. An evaluation built on structure is sound
-positionally but tactically blind, and a safe king is no use once the
-pieces defending it have been lost.
+The difference comes down to what each evaluation sees when the search runs out. At depth 3, both agents score the board as it stands, even if a piece is about to be captured. Because Reynear's agent evaluates only structure (shelter, pawns, and piece squares), a position with a hanging piece looks just as good as a safe one. Darren's agent adds a threats term counting enemy pieces that are undefended or attacked by a cheaper piece.
 
 ### Against the reference agent
 
 For comparison, Reynear's agent beat the material-only reference agent 7 - 3
 over ten games at the same depth, so the structural terms do help against
 an opponent with no positional or tactical knowledge of its own.
+
+# AI Usage 
+The Cloud family of models was used significantly for Assistance in unfamiliar code segments Debugging and proofreading and verifying documentation and code but I'll strategies, implementations, etc., are directly attributed to the two group members (620171008, 620169548)
